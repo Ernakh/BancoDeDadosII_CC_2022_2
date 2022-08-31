@@ -190,12 +190,3 @@ VALUES (1, 1),
 	   (3, 1),
 	   (3, 2),
 	   (3, 3);
-	   
-
-
-
-
-
-
-UPDATE PRODUTOS SET codBarras = '326068406549804964' WHERE id = 1;
-SELECT * FROM PRODUTOS FOR system_time all WHERE id =1 ORDER BY INICIO ASC;
