@@ -1,3 +1,4 @@
+-- teste
 
 create database aulatrigger
 
