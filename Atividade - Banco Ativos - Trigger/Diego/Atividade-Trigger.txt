@@ -1,0 +1,90 @@
+-- 1 - Faça um banco de dados que, ao inserir uma pessoa, informa em um campo a informação 'SIM' ou 'NÃO'
+-- referente a pessoa ser maior de idade ou NÃO. No "INSERT", o ano de nascimento deve ser inserido.
+
+create database Exercicios
+
+create table Usuarios (
+    id_usuario int identity(1,1),
+    nome varchar(255) unique not null,
+    idade int not null,
+    maior_idade varchar(10) not null
+);
+
+select * from Usuarios
+
+insert into Usuarios (nome, idade, maior_idade) values ('Nome 2', 15, 'Não')
+
+select * from Usuarios
+
+create trigger triggerinsert 
+on Usuarios
+before insert
+as 
+	declare @maior_idade integer
+	select @maior_idade = (select maior_idade from Usuarios)
+begin
+
+	IF idade >= 18
+		begin
+			insert into log values ('Inserção', 'A pessoa é maior de idade'
+				, GETDATE());
+			print ('Pessoa inserida com sucesso!');
+		end
+	ELSE
+		begin
+			ROLLBACK;
+			insert into log values ('Inserção', 'A pessoa não é maior de idade'
+				, GETDATE());
+			RAISERROR('INVALIDO - pessoa não autorizada', 14, 1);
+			RETURN;
+		end
+end
+
+
+-- Utilizando um banco de dados com suporte a triggers de sua preferência, resolva:
+-- 1. Relacione as entidades e seus respectivos atributos para este banco de dados;
+-- 2. Crie o comando SQL para a criação do banco de dados DINOSSAUROS;
+-- 3. Crie o comando SQL para a criação das tabelas necessárias;
+-- 4. Crie o comando SQL para inserção de pelo menos 5 registros acima, em todas as tabelas necessárias;
+-- 5. Faça uma trigger que valide os anos iniciais e finais da existência do dinossauro inserido ou atualizado. Caso os anos
+-- não estejam corretos, cancele a operação e mostre uma mensagem ao usuário.
+-- 6. Atualize a trigger anterior, para validar a inserção e alteração do dinossauro, conforme as eras (verificar se os anos de
+-- existência do dinossauro condizem com a era informada), informando que os valores de anos estão errados ou não
+-- condizem com a era informada. 
+
+
+
+
+
+create table dinos(
+	 id_dinossauros int primary key identity(1,1)
+	,Dinossauro			varchar(100)
+	,Grupo				varchar(100)
+	,Toneladas			int
+	,Ano_Descoberta		int
+	,Descobridor		varchar(255)
+	,Era				varchar(100)
+	,Inicio				int
+	,Fim				int
+	,Pais				varchar(100)
+)
+													                                              
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Saichania'		, 'Anquilossauros'      ,4					,1977					,'Maryanska'								,'Cretáceo'      ,145					,66					,'Mongólia'			)
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Tricerátops'		, 'Ceratopsídeos'       ,6					,1887					,'John Bell Hatcher'						,'Cretáceo'      ,70					,66					,'Canadá'			)
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Kentrossauro'	, 'Estegossauros'       ,2					,1909					,'Cientistas Alemães'						,'Jurássico'     ,200					,145				,'Tanzânia'			)
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Pinacossauro'	, 'Anquilossauros'      ,6					,1999					,'Museu Americano de História Natural'		,'Triássico'     ,85					,75					,'China'			)
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Alossauro'		, 'Terápodes'           ,3					,1877                   ,'Othniel Charles Marsh'					,'Jurássico'     ,155					,150				,'América do Norte'	)
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Torossauro'		, 'Ceratopsídeos'       ,8		            ,1891					,'John Bell Hatcher'						,'Cretáceo'      ,67					,65					,'USA'              )                                                                                                          
+insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Anquilossauro'	, 'Anquilossauros'      ,8		            ,1906					,'Barnum Brown'								,'Triássico'     ,66					,63					,'América do Norte'	)
+                          
+														                                              
+Dinossauro			Grupo				Toneladas           Ano Descoberta          Descobridor									Era          Início(milhões)		Fim(milhões)        País   
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Saichania			Anquilossauros      4					1977					Maryanska									Cretáceo      145					66					Mongólia
+Tricerátops			Ceratopsídeos       6					1887					John Bell Hatcher							Cretáceo      70					66					Canadá
+Kentrossauro		Estegossauros       2					1909					Cientistas Alemães							Jurássico     200					145					Tanzânia
+Pinacossauro		Anquilossauros      6					1999					Museu Americano de História Natural			Triássico     85					75					China
+Alossauro			Terápodes           3					1877                    Othniel Charles Marsh						Jurássico     155					150					América do Norte
+Torossauro			Ceratopsídeos       8		            1891					John Bell Hatcher							Cretáceo      67					65					USA                                                                                                                        
+Anquilossauro		Anquilossauros      8		            1906					Barnum Brown								Triássico     66					63					América do Norte
+                                                                                                                          
