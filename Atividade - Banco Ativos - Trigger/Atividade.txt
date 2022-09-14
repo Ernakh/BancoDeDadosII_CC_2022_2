@@ -1,0 +1,4 @@
+1 - Faça um banco de dados que, ao inserir uma pessoa, informa em um campo a informação 'SIM' ou 'NÃO' referente a pessoa ser maior de idade ou NÃO.
+No "INSERT", o ano de nascimento deve ser inserido.
+
+2 - 
