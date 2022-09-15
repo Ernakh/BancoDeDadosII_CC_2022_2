@@ -1,0 +1,39 @@
+create table pessoa
+(
+	id integer not null primary key identity,
+	nome varchar(50) not null,
+	ano_de_nascimento int,
+	maior_idade varchar(10)
+)
+
+create table log
+(
+	id integer not null primary key identity,
+	acao varchar(10) not null,
+	descricao varchar(100),
+	quando datetime not null
+)
+
+create trigger triggerano
+on pessoa
+after insert
+as
+	declare @novo varchar(10)
+
+	select @novo = (select inserted.ano_de_nascimento from inserted)
+	IF @novo <= 2004
+	begin
+	insert into log values ('Inserção','SIM',GETDATE())
+	end
+	Else
+	begin
+	insert into log values ('Inserção','NÃO',GETDATE())
+	end
+
+INSERT INTO pessoa values ('Cristian','1993','')
+
+INSERT INTO pessoa values ('João','2008','')
+
+
+select * from pessoa
+select * from log
