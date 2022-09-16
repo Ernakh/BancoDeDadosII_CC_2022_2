@@ -1,45 +1,42 @@
 -- 1 - Faça um banco de dados que, ao inserir uma pessoa, informa em um campo a informação 'SIM' ou 'NÃO'
 -- referente a pessoa ser maior de idade ou NÃO. No "INSERT", o ano de nascimento deve ser inserido.
 
-create database Exercicios
+create database teste
 
 create table Usuarios (
-    id_usuario int identity(1,1),
+    id_usuario int primary key identity(1,1),
     nome varchar(255) unique not null,
-    idade int not null,
-    maior_idade varchar(10) not null
+    ano_nasc int,
+    maior_idade varchar(10)
 );
-
 select * from Usuarios
 
-insert into Usuarios (nome, idade, maior_idade) values ('Nome 2', 15, 'Não')
-
-select * from Usuarios
-
-create trigger triggerinsert 
-on Usuarios
-before insert
+create trigger triggeridade 
+on usuarios
+after insert
 as 
-	declare @maior_idade integer
-	select @maior_idade = (select maior_idade from Usuarios)
+	declare @idade integer
+	select @idade = (select(2022-ano_nasc) from inserted)
 begin
 
-	IF idade >= 18
-		begin
-			insert into log values ('Inserção', 'A pessoa é maior de idade'
-				, GETDATE());
-			print ('Pessoa inserida com sucesso!');
-		end
-	ELSE
-		begin
-			ROLLBACK;
-			insert into log values ('Inserção', 'A pessoa não é maior de idade'
-				, GETDATE());
-			RAISERROR('INVALIDO - pessoa não autorizada', 14, 1);
-			RETURN;
-		end
+	IF @idade < 18
+	begin
+		update Usuarios set maior_idade = 'Não'
+		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
+									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
+	end
+	else
+	begin
+		update Usuarios set maior_idade = 'Sim'
+		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
+									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
+	end
 end
 
+insert into usuarios (nome, ano_nasc) values ('Diego', 1992)
+insert into usuarios (nome, ano_nasc) values('Luan', 2010)
+
+select * from usuarios
 
 -- Utilizando um banco de dados com suporte a triggers de sua preferência, resolva:
 -- 1. Relacione as entidades e seus respectivos atributos para este banco de dados;
@@ -52,39 +49,111 @@ end
 -- existência do dinossauro condizem com a era informada), informando que os valores de anos estão errados ou não
 -- condizem com a era informada. 
 
+create table grupos_dinos(
+	  id_grupo int primary key identity(1,1)
+	 ,nome varchar(255) unique not null
+)
 
+insert into grupos_dinos(nome) values('Anquilossauros')
+insert into grupos_dinos(nome) values('Ceratopsídeos')
+insert into grupos_dinos(nome) values('Estegossauros')
+insert into grupos_dinos(nome) values('Terápodes')
 
+select * from grupos_dinos
+	
+create table Descobridores(
+	  id_descobridor int primary key identity(1,1)
+	 ,nome varchar(255) unique not null
+)
 
+insert into descobridores(nome) values ('Maryanska')
+insert into descobridores(nome) values ('John Bell Hatcher')
+insert into descobridores(nome) values ('Cientistas Alemães')
+insert into descobridores(nome) values ('Museu Americano de História Natural')
+insert into descobridores(nome) values ('Othniel Charles Marsh')
+insert into descobridores(nome) values ('Barnum Brown')
+
+select * from descobridores
+
+create table eras_dinos(
+	  id_era int primary key identity(1,1)
+	 ,nome varchar(255) unique not null
+)
+
+insert into eras_dinos(nome) values('Cretáceo')
+insert into eras_dinos(nome) values('Jurássico')
+insert into eras_dinos(nome) values('Triássico')
+	
+select * from eras_dinos
+
+create table paises(
+	  id_pais int primary key identity(1,1)
+	 ,nome varchar(255) unique not null
+)
+
+insert into paises(nome)values ('Mongólia')
+insert into paises(nome)values ('Canadá')
+insert into paises(nome)values ('Tanzânia')
+insert into paises(nome)values ('China')
+insert into paises(nome)values ('América do Norte')
+insert into paises(nome)values ('USA')
+
+select * from pais
 
 create table dinos(
 	 id_dinossauros int primary key identity(1,1)
 	,Dinossauro			varchar(100)
-	,Grupo				varchar(100)
+	,Fk_Grupo			int
 	,Toneladas			int
 	,Ano_Descoberta		int
-	,Descobridor		varchar(255)
-	,Era				varchar(100)
+	,Fk_Descobridor		int
+	,Fk_Era				int
 	,Inicio				int
 	,Fim				int
-	,Pais				varchar(100)
+	,Fk_Pais			int
+    ,FOREIGN KEY (Fk_Grupo) REFERENCES grupos_dinos(Id_Grupo)
+    ,FOREIGN KEY (Fk_Descobridor) REFERENCES descobridores(Id_Descobridor)
+    ,FOREIGN KEY (Fk_Era) REFERENCES eras_dinos(Id_Era)
+    ,FOREIGN KEY (Fk_Pais) REFERENCES paises(Id_Pais)
 )
-													                                              
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Saichania'		, 'Anquilossauros'      ,4					,1977					,'Maryanska'								,'Cretáceo'      ,145					,66					,'Mongólia'			)
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Tricerátops'		, 'Ceratopsídeos'       ,6					,1887					,'John Bell Hatcher'						,'Cretáceo'      ,70					,66					,'Canadá'			)
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Kentrossauro'	, 'Estegossauros'       ,2					,1909					,'Cientistas Alemães'						,'Jurássico'     ,200					,145				,'Tanzânia'			)
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Pinacossauro'	, 'Anquilossauros'      ,6					,1999					,'Museu Americano de História Natural'		,'Triássico'     ,85					,75					,'China'			)
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Alossauro'		, 'Terápodes'           ,3					,1877                   ,'Othniel Charles Marsh'					,'Jurássico'     ,155					,150				,'América do Norte'	)
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Torossauro'		, 'Ceratopsídeos'       ,8		            ,1891					,'John Bell Hatcher'						,'Cretáceo'      ,67					,65					,'USA'              )                                                                                                          
-insert into dinos (Dinossauro, Grupo, Toneladas, Ano_Descoberta, Descobridor, Era, Inicio, Fim, Pais) VALUES ('Anquilossauro'	, 'Anquilossauros'      ,8		            ,1906					,'Barnum Brown'								,'Triássico'     ,66					,63					,'América do Norte'	)
+
+select * from dinos
+
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Saichania'		,1 ,4 ,1977 ,1 ,1 ,145	,66	 ,1)
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Tricerátops'		,2 ,6 ,1887 ,2 ,1 ,70	,66	 ,2)
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Kentrossauro'	,3 ,2 ,1909 ,3 ,2 ,200	,145 ,3)
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Pinacossauro'	,1 ,6 ,1999 ,4 ,3 ,85	,75	 ,4)
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Alossauro'		,4 ,3 ,1877 ,5 ,2 ,155	,150 ,5)
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Torossauro'		,2 ,8 ,1891 ,2 ,1 ,67	,65	 ,6)                                                                                                          
+insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Anquilossauro'	,1 ,8 ,1906 ,6 ,3 ,66	,63	 ,5)
                           
-														                                              
-Dinossauro			Grupo				Toneladas           Ano Descoberta          Descobridor									Era          Início(milhões)		Fim(milhões)        País   
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Saichania			Anquilossauros      4					1977					Maryanska									Cretáceo      145					66					Mongólia
-Tricerátops			Ceratopsídeos       6					1887					John Bell Hatcher							Cretáceo      70					66					Canadá
-Kentrossauro		Estegossauros       2					1909					Cientistas Alemães							Jurássico     200					145					Tanzânia
-Pinacossauro		Anquilossauros      6					1999					Museu Americano de História Natural			Triássico     85					75					China
-Alossauro			Terápodes           3					1877                    Othniel Charles Marsh						Jurássico     155					150					América do Norte
-Torossauro			Ceratopsídeos       8		            1891					John Bell Hatcher							Cretáceo      67					65					USA                                                                                                                        
-Anquilossauro		Anquilossauros      8		            1906					Barnum Brown								Triássico     66					63					América do Norte
-                                                                                                                          
+-- 5. Faça uma trigger que valide os anos iniciais e finais da existência do dinossauro inserido ou atualizado. Caso os anos
+-- não estejam corretos, cancele a operação e mostre uma mensagem ao usuário.
+-- 6. Atualize a trigger anterior, para validar a inserção e alteração do dinossauro, conforme as eras (verificar se os anos de
+-- existência do dinossauro condizem com a era informada), informando que os valores de anos estão errados ou não
+-- condizem com a era informada. 
+
+
+create trigger triggervalidaanos 
+on dinos
+after insert
+as 
+	declare @ano_inicial integer
+	declare @ano_final integer
+	select @ano_inicial = (select(inicio) from inserted)
+	select @ano_final = (select(fim) from inserted)
+begin
+
+	IF @idade < 18
+	begin
+		update Usuarios set maior_idade = 'Não'
+		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
+									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
+	end
+	else
+	begin
+		update Usuarios set maior_idade = 'Sim'
+		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
+									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
+	end
+end
