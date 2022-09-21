@@ -144,16 +144,29 @@ as
 	select @ano_final = (select(fim) from inserted)
 begin
 
+--<<<<<<< diegoluanfs-patch-6
 	IF @ano_final < @ano_inicial
 	begin
 		print('OOOOOOOOOOOOOOOoooooooooo diacho, tu colocou as datas certas?')
 		where Dinos.id_dinossauro = (select inserted.id_dinossauro from inserted
 									join Usuarios on inserted.id_dinossauro = Usuarios.id_usuario)
+--=======
+--	IF @idade < 18
+--	begin
+--		update Usuarios set maior_idade = 'Não'
+--		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
+--									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
+-->>>>>>> main
 	end
 	else
 	begin
 		update Usuarios set maior_idade = 'Sim'
-		where Usuarios.id_dinossauro = (select inserted.id_dinossauro from inserted
-									join Usuarios on inserted.id_dinossauro = Usuarios.id_dinossauro)
+--<<<<<<< diegoluanfs-patch-6
+	--	where Usuarios.id_dinossauro = (select inserted.id_dinossauro from inserted
+	--								join Usuarios on inserted.id_dinossauro = Usuarios.id_dinossauro)
+--=======
+		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
+									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
+-->>>>>>> main
 	end
 end
