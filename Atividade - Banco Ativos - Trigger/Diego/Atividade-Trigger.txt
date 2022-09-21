@@ -43,11 +43,6 @@ select * from usuarios
 -- 2. Crie o comando SQL para a criação do banco de dados DINOSSAUROS;
 -- 3. Crie o comando SQL para a criação das tabelas necessárias;
 -- 4. Crie o comando SQL para inserção de pelo menos 5 registros acima, em todas as tabelas necessárias;
--- 5. Faça uma trigger que valide os anos iniciais e finais da existência do dinossauro inserido ou atualizado. Caso os anos
--- não estejam corretos, cancele a operação e mostre uma mensagem ao usuário.
--- 6. Atualize a trigger anterior, para validar a inserção e alteração do dinossauro, conforme as eras (verificar se os anos de
--- existência do dinossauro condizem com a era informada), informando que os valores de anos estão errados ou não
--- condizem com a era informada. 
 
 create table grupos_dinos(
 	  id_grupo int primary key identity(1,1)
@@ -98,7 +93,7 @@ insert into paises(nome)values ('China')
 insert into paises(nome)values ('América do Norte')
 insert into paises(nome)values ('USA')
 
-select * from pais
+select * from paises
 
 create table dinos(
 	 id_dinossauro int primary key identity(1,1)
@@ -117,8 +112,8 @@ create table dinos(
     ,FOREIGN KEY (Fk_Pais) REFERENCES paises(Id_Pais)
 )
 
-select * from dinos
-
+--truncate table dinos
+          
 insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Saichania'		,1 ,4 ,1977 ,1 ,1 ,145	,66	 ,1)
 insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Tricerátops'		,2 ,6 ,1887 ,2 ,1 ,70	,66	 ,2)
 insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Kentrossauro'	,3 ,2 ,1909 ,3 ,2 ,200	,145 ,3)
@@ -126,47 +121,73 @@ insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobrid
 insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Alossauro'		,4 ,3 ,1877 ,5 ,2 ,155	,150 ,5)
 insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Torossauro'		,2 ,8 ,1891 ,2 ,1 ,67	,65	 ,6)                                                                                                          
 insert into dinos (Dinossauro, Fk_Grupo, Toneladas, Ano_Descoberta, Fk_Descobridor, Fk_Era, Inicio, Fim, Fk_Pais) VALUES ('Anquilossauro'	,1 ,8 ,1906 ,6 ,3 ,66	,63	 ,5)
-                          
+        
+select * from dinos
+
 -- 5. Faça uma trigger que valide os anos iniciais e finais da existência do dinossauro inserido ou atualizado. Caso os anos
 -- não estejam corretos, cancele a operação e mostre uma mensagem ao usuário.
+
+--create trigger triggervalidaanos 
+--on dinos
+--after insert
+--as 
+--	declare @ano_inicial integer
+--	declare @ano_final integer
+--	select @ano_inicial = (select(inicio) from inserted)
+--	select @ano_final = (select(fim) from inserted)
+--begin
+
+--	IF @ano_final < @ano_inicial
+--	begin
+--		print('Datas certas?')
+--		rollback;
+--	end
+--	else
+--	begin
+--		print('Agora parece certo!')
+--	end
+--end
+
 -- 6. Atualize a trigger anterior, para validar a inserção e alteração do dinossauro, conforme as eras (verificar se os anos de
 -- existência do dinossauro condizem com a era informada), informando que os valores de anos estão errados ou não
 -- condizem com a era informada. 
+      
+select * from eras_dinos
 
+--Triássico: 251 -> 200
+--Jurássico: 200 -> 145
+--Cretáceo: 145 -> 65
 
 create trigger triggervalidaanos 
 on dinos
-after insert
+AFTER insert
 as 
 	declare @ano_inicial integer
 	declare @ano_final integer
+	declare @eras_dinos integer
 	select @ano_inicial = (select(inicio) from inserted)
 	select @ano_final = (select(fim) from inserted)
 begin
 
---<<<<<<< diegoluanfs-patch-6
 	IF @ano_final < @ano_inicial
 	begin
-		print('OOOOOOOOOOOOOOOoooooooooo diacho, tu colocou as datas certas?')
-		where Dinos.id_dinossauro = (select inserted.id_dinossauro from inserted
-									join Usuarios on inserted.id_dinossauro = Usuarios.id_usuario)
---=======
---	IF @idade < 18
---	begin
---		update Usuarios set maior_idade = 'Não'
---		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
---									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
--->>>>>>> main
+		print('Datas certas?')
+		rollback;
 	end
 	else
 	begin
-		update Usuarios set maior_idade = 'Sim'
---<<<<<<< diegoluanfs-patch-6
-	--	where Usuarios.id_dinossauro = (select inserted.id_dinossauro from inserted
-	--								join Usuarios on inserted.id_dinossauro = Usuarios.id_dinossauro)
---=======
-		where Usuarios.id_usuario = (select inserted.id_usuario from inserted
-									join Usuarios on inserted.id_usuario = Usuarios.id_usuario)
--->>>>>>> main
+		IF @ano_inicial >= 251 AND @ano_final <= 200
+			--triássico
+			print('Triássico!')
+		ELSE IF @ano_inicial >= 200 AND @ano_final <= 145
+			--Jurássico
+			print('Jurássico!')
+
+		ELSE IF @ano_inicial >= 145 AND @ano_final <= 65
+			--Cretáceo
+			print('Cretáceo!')
+
+		ELSE
+			ROLLBACK;
 	end
 end
