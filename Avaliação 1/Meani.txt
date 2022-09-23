@@ -1,0 +1,59 @@
+Atividade Avaliativa
+1. Banco de dados temporais permitem o versionamento de registros, armazenando o histórico dos valores de acordo com a data do registro. Podem ser úteis para armazenar o histórico de valores de um produto, histórico de cargos de um funcionário, histórico de salários de um funcionário.
+
+2. Bancos de dados ativos possuem a capacidade de monitorar e reconhecer eventos, aplicando regras que avaliação condições definidas e executando ações automaticamente de maneira transparente ao usuário, enquanto o banco de dados convencional apenas realiza ações e comandos executados pelo usuário.
+
+3. Exemplo de utilização de triggers:
+    - Para registro de vendas de produtos, pode-se criar uma trigger para conferir se a quantidade de produtos a ser vendida existe em estoque;
+    - Para registro de usuários, pode-se criar uma trigger para conferir se já existe um usuário com mesmo documento e/ou nome antes de realizar a inserção;
+    - Para registro de atividades, pode-se criar uma trigger para conferir se a atividade foi finalizada antes de realizar a exclusão, se ainda não finalizada retorna um erro informando que a atividade está em aberto.
+
+4. Exemplo produtos:
+CREATE TABLE PRODUTOS (
+	ID_PRODUTO INTEGER PRIMARY KEY IDENTITY,
+	DESCRICAO VARCHAR(50) NOT NULL,
+	CATEGORIA VARCHAR(30),
+	VALOR DECIMAL(15,2) NOT NULL,
+	QUANTIDADE INTEGER,
+	INI DATETIME2 GENERATED ALWAYS AS ROW START NOT NULL,
+	FIM DATETIME2 GENERATED ALWAYS AS ROW END NOT NULL,
+	PERIOD FOR SYSTEM_TIME (INI, FIM)
+)
+WITH (
+	SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.PRODUTOS_HISTORICO)
+)
+
+5. Controle de matrícula:
+CREATE TABLE ALUNOS(
+	ID_ALUNO INTEGER NOT NULL PRIMARY KEY IDENTITY,
+	NOME_ALUNO VARCHAR(40),
+	MATRICULA VARCHAR(10)
+)
+
+CREATE TABLE CURSOS(
+	ID_CURSO INTEGER NOT NULL PRIMARY KEY IDENTITY,
+	NOME_CURSO VARCHAR(30),
+	AREA VARCHAR(30)
+)
+
+CREATE TABLE MATRICULAS(
+	ID_MATRICULA INTEGER NOT NULL PRIMARY KEY IDENTITY,
+	FK_ID_ALUNO INTEGER NOT NULL,
+	FK_ID_CURSO INTEGER NOT NULL,
+	FOREIGN KEY (FK_ID_ALUNO) REFERENCES ALUNOS(ID_ALUNO),
+	FOREIGN KEY (FK_ID_CURSO) REFERENCES CURSOS(ID_CURSO)
+)
+
+CREATE TRIGGER CHECKMATRICULA
+ON MATRICULAS AFTER INSERT AS BEGIN
+DECLARE @MATRICULA INTEGER
+DECLARE @ALUNO INTEGER
+DECLARE @CURSO INTEGER
+SELECT @ALUNO = (SELECT FK_ID_ALUNO FROM INSERTED)
+SELECT @CURSO = (SELECT FK_ID_CURSO FROM INSERTED)
+SET @MATRICULA = (SELECT COUNT(ID_MATRICULA) FROM MATRICULAS WHERE FK_ID_ALUNO = @ALUNO AND FK_ID_CURSO = @CURSO)
+	IF @MATRICULA > 0
+		RAISERROR('Aluno já matriculado no curso selecionado',14,1)
+	ELSE
+		INSERT INTO MATRICULAS(FK_ID_ALUNO, FK_ID_CURSO) VALUES (@ALUNO, @CURSO)
+END
