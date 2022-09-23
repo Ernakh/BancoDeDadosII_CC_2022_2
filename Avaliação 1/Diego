@@ -1,0 +1,84 @@
+Avaliação  Diego Luan F. da Silva
+ 
+Avaliação I
+(1,0) Defina com suas palavras um banco de dados temporal e liste ao menos 3 exemplos de aplicações que podem ser beneficiadas pelo seu uso.
+O banco de dados temporal serve para armazenar dados de um determinado evento, podendo assim ser aplicado a quase todo tipo de banco de dados. Por exemplo, armazenamento de transações bancárias, evolução de treinamento em academia, e também, em sistemas de controle de estoque.
+(1,0) Explique o que é um banco de dados ativo e qual a sua diferença em relação a um banco convencional.
+Os bancos de dados ativos atuam como gestores de regras de negócios que são compartilhadas entre os sistemas que utilizam ele. Esses bancos utilizam o sistema Evento-Condição-Ação (ECA), ou seja, para cada evento é validada a condição e então disparada a ação.
+(1 ,0) Um trigger pode ser utilizado em diferentes contextos, exemplifica ao menos 3 possibilidades de utilização de uma trigger.
+Uma trigger pode ser utilizada para validar dados antes (ou depois) de inserir na tabela, podem ser validadas regras de negócio antes (ou depois) de os dados serem inseridos na tabela, e pode também, disparar eventos antes (ou depois) de inserir os dados na tabela.
+(2,0) Implemente um banco de dados temporal conforme um dos exemplos citados na questão 1.
+
+Create table pessoas
+(
+	Id integer primary key identity,
+	Cpf varchar(15) unique not null,
+	Nome varchar(255) not null,
+	Fk_conta_fisica int id,
+	Fk_conta_juridica int id,
+	Inicio datetime2 generated Always as row start not null,
+	Fim datetime2 generated Always as row end not null,
+	Period for system_time(inicio, fim)
+)
+With (system_versioning = on)
+
+Create table conta
+(
+	Id integer primary key identity,
+	Fk_pessoa int not null,
+	Numero_conta varchar(255),
+	Numero_agencia varchar(255),
+	Saldo decimal(18,2) not null,
+	Fk_tipo_conta int  not null,
+)
+
+Create table tipo_conta
+(
+	Id primary key identity,
+	Name varchar(255) not null
+)
+
+Create table transacoes
+(
+	Id integer primary key identity,
+	Fk_conta_remetente int not null,
+	Fk_conta_destinatario int not null,
+	Fk_id_pessoa int not null,
+	Inicio datetime2 generated Always as row start not null,
+	Fim datetime2 generated Always as row end not null,
+	Period for system_time(inicio, fim)
+)
+With (system_versioning = on)
+)
+
+
+(2,0) Utilizando o conhecimento adquirido em sala de aula modele e implemente um banco de dados com características ativas, para o ato de matricular alunos em cursos. Ao efetuar a matrícula, o banco de dados deve tratar se o aluno já está matriculado no curso selecionado ou não.
+Create table cursos
+(
+	Id int primary key,
+	Name varchar(255) not null
+)
+
+Create table alunos
+(
+	Id int primary key,
+	Cpf varchar(15),
+	Name varchar(255),
+	Fk_matricula int
+)
+Create trigger triggermatriculaalunos
+On cursos before insert as
+Declare @id_alunos integer
+Select @id_alunos = (select (id) from alunos)
+Begin
+	If,,,
+	Begin
+		Print(‘’)
+		Rollback
+	End
+	Else	
+	Begin
+		Print(‘’)
+	End
+End
+(3,0) Utilizando o conhecimento adquirido em sala de aula modele e implemente um banco de dados com características ativas, que bloqueie a exclusão de notas fiscais, assim como a alteração dos valores cadastrados. Armazenar as operações (bloqueadas ou não) em uma tabela de logs.
