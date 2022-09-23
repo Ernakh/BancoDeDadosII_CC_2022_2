@@ -1,0 +1,96 @@
+1) Armazena informações históricas a respeito de um determinado objeto que nele está sendo mantido. Ex: empresas aéreas, hotéis, quadro clínico de pacientes.
+
+2) É quando eventos gerados nele provocam resposta do próprio banco de dados independente do usuário. A diferença é que o banco de dados só executa transações quando são requisitados pelo usuário ou aplicação.
+
+
+3) Reduz o saldo final de um caixa na data da venda quando for inserida.
+
+create trigger triggervendas
+on vendas
+for insert
+as
+begin
+    declare
+    @valor  decimal(10,2),
+    @data   datetime
+
+    select @data = data, @valor = valor from inserted
+
+    update caixa set saldo_final = saldo_final + @valor
+    where data = @data
+end
+----------------------------------------------------------
+Devolve o valor ao caixa quando a venda for excluída
+
+create trigger triggerdevolver
+on vendas
+for delete
+as
+begin
+    declare
+    @valor  decimal(10,2),
+    @data   datetime
+
+    select @data = data, @valor = valor from deleted
+
+    update caixa set saldo_final = saldo_final - @valor
+    where data = @data
+end
+----------------------------------------------------------
+Após um delete na tabela ira exibir a mensagem registro
+
+
+create trigger triggercargo
+on cargo
+for delete
+as
+begin
+
+print (‘Registro excluído.’)
+end
+----------------------------------------------------------
+
+4) 
+
+create database hotel
+
+create table funcionarios
+(
+	id integer not null primary key identity,
+	nome varchar (50)
+)
+with (system_versioning = ON)
+
+
+create table hospedes
+(
+	id integer not null primary key identity,
+	nome varchar(50),
+	tempo date
+	inicio datetime2 generated always as row start not null,
+	fim datetime2 generated always as row end not null,
+		period for system_time (inicio, fim)
+)
+
+select * from hospedes
+
+insert into hospedes (nome) values ('Ricardo Almeida')
+update hospedes set tempo = '2309' where id = 1
+delete from hospedes where id = 1
+
+select * from hospedes
+for system_time all
+where id = 1
+
+
+
+alter table hospedes set (system_versioning = OFF)
+
+update hospedes set tempo = '2509' where id = 3
+
+drop table hospedes
+-----------------------------------------------------
+
+5) 
+
+
