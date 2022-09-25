@@ -1,0 +1,103 @@
+    1. É a possibilidade (recurso) que o SGBD disponibiliza para armazenar informações históricas de determinada entidade dos dados que sofreram inserção, alteração ou deleção. Em uma situação convencional apenas os últimos dados de um registro ficam armazenados e não suas versões anteriores. É um mecanismo muito utilizado na área médica como, por exemplo, guardar histórico de peso de um paciente sem precisar criar uma tabela específica para isso. Ou, em casos mais relevantes, como a modificação de informações pessoais de um usuário no sistema (nome, CPF, endereço, Etc.). Um exemplo pode ser uma locadora de automóveis que precisa constantemente atualizar registros de seus veículos, como quilometragem e manutenção. Outra utilidade estaria nos sistemas de reservas que registram alterações de check-in ou check-out de um hotel, por exemplo. 
+       
+    2. e 3. Um banco de dados convencional se responsabiliza, apenas, por armazenar a informação. Um banco de dados ativo além de armazenar contem gatilhos (trigger) que garantem a integridade de dados, automatização de processos, auditoria e logs. Um gatilho cria um mecanismo automatizado que obedece determinadas regras que será acionado, apenas, quando determinada instrução for executada dentro do banco de dados. O uso desse artefato tem infinitas possibilidades que vai desde o simples controle de estoque de uma empresa - evitando que fique negativo -, como formas de proteção a informação - inativando a visualização de um registro ao invés de apagá-lo-, ou atualizar os dados de um conjunto de linhas(registros) simultaneamente - que atendem a especificação da trigger -, por exemplo. Triggers, de certa forma, são ferramentas que atendem as regras de negócio da instituição que irá utilizar o banco. 
+       
+    4.
+create table carros( 
+        id integer primary key identity, 
+        ano integer, 
+        marca varchar(15), 
+        modelo varchar(15), 
+        cor varchar(10), 
+        kilometragem integer not null default 0, 
+        inicio datetime2 generated always as row start not null, 
+        fim datetime2 generated always as row end not null, 
+        period for system_time (inicio, fim) 
+) with 
+( system_versioning = ON (history_table = dbo.carrosHistorico)) 
+ 
+insert into carros (ano, marca, modelo, cor) 
+values (2020, 'Ford', 'Fusion', 'Prata'), 
+             (2008, 'Fiat', 'Punto', 'Amarelo', 250000), 
+             (2022, 'Hyundai', 'HB20', 'Preto', 8000); 
+ 
+update carros set kilometragem = 800 where id = 1 
+update carros set kilometragem = 480800 where id = 3 
+update carros set kilometragem = 1800 where id = 1 
+ 
+delete from carros where id = 3 
+ 
+select * from carros 
+for system_time all 
+where id = 1 
+ 
+select ch.modelo from carros as c 
+right join carrosHistorico as ch on ch.id = c.id 
+where c.id is null 
+
+
+
+	5. 
+
+create database curso
+use curso
+
+create table alunos
+(
+	idAluno integer not null primary key identity,
+	nomeAluno varchar(50) not null,
+	cpf varchar(11) not null,
+	email varchar(30) not null
+)
+
+create table cursos
+(
+	idCurso integer not null primary key identity,
+	nomeCurso varchar (30) not null,
+	area varchar (30)
+)
+
+create table alunos_cursos
+(
+	id integer primary key identity,
+	matricula varchar(8),
+	fk_idAluno integer,
+	fk_idCurso integer,
+	foreign key (fk_idAluno) references alunos(idAluno),
+	foreign key (fk_idCurso) references cursos(idCurso)
+)
+
+insert into alunos values ('Eduardo', '11111111111', 'eduardo@ufn.edu.br'),
+	('Caio', '22222222222', 'caio@ufn.edu.br'),
+	('Ana', '33333333333', 'ana@ufn.edu.br'),
+
+insert into cursos values ('Medicina', 'Ciências da Saúde'),
+	('Sistemas de Informação', 'Ciências Tecnolológicas'),
+	('Direito', 'Ciências Sociais')
+
+insert into alunos_cursos values ('20220922', 1, 1),
+				('20220923', 1, 1),
+				 ('20220923', 2, 2)
+
+select * from cursos
+
+create trigger verificar
+on alunos_cursos
+after insert 
+as
+	declare @aluno integer 
+	declare @curso integer
+	declare @contagem integer
+	select @aluno = fk_idAluno from inserted
+	select @curso = fk_idCurso from inserted
+	select @contagem = (select count(*) from alunos_cursos where fk_idAluno = @aluno and fk_idCurso = @curso)
+	print (@contagem);
+	if(@contagem = 1)
+	begin
+		print('Matriculado!');
+	end
+	else
+	begin
+		rollback;
+		raiserror('Já presente no banco de dados.', 14, 1);
+	end
