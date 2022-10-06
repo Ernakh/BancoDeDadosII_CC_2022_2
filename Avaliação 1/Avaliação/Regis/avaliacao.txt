@@ -1,0 +1,200 @@
+1)
+
+create database ex1;
+
+create table produto
+(
+	id_produto integer not null primary key identity,
+	nome_produto varchar(50) not null,
+	estoque integer not null default 0
+)
+
+drop table produto;
+
+create table cliente
+(
+	id_cliente integer not null primary key identity,
+	nome_cliente varchar(50) not null
+) 
+
+drop table cliente;
+
+create table entrega
+(
+	id_entrega integer primary key identity,
+	fk_id_cliente int foreign key references cliente(id_cliente),
+	fk_id_produto int foreign key references produto(id_produto),
+	localizacao varchar(50) not null,
+	quantidade int not null,
+	inicio datetime2 generated always as row start not null,
+	fim datetime2 generated always as row end not null,
+	period for system_time (inicio, fim)
+)
+with
+(
+	system_versioning = ON (history_table = dbo.entregaHistorico)
+)
+
+drop table entrega;
+
+alter table entrega SET (system_versioning = OFF);
+
+drop table dbo.entregaHistorico;
+
+
+insert into cliente(nome_cliente) values('Armando');
+insert into cliente(nome_cliente) values('Joao');
+
+insert into produto(nome_produto, estoque) values ('Tenis', 4);
+insert into produto(nome_produto, estoque) values ('Sapatos', 2);
+
+insert into entregas(fk_id_cliente, fk_id_produto, localizacao, quantidade) 
+values (1, 1, Palmas, 4);
+
+insert into entregas(fk_id_cliente, fk_id_produto, localizacao, quantidade) 
+values (2, 2, 'Agudo', 6);
+
+
+update entrega set localizacao = 'Sao Paulo' where id_entrega = 1;
+
+update entrega set localizacao = 'Porto Alegre' where id_entrega = 2;
+
+
+============================================================
+
+2)
+
+
+create database ex2;
+
+create table produto
+(
+	id_produto integer primary key identity,
+	nome_produto varchar(50) not null,
+	estoque integer not null default 0
+)
+
+select * from produto;
+
+drop table produto;
+
+create table cliente
+(
+	id_produto integer not null primary key identity,
+	nome_cliente varchar(50) not null
+)
+
+drop table cliente;
+
+create table venda 
+(
+	 id_venda integer not null primary key identity,
+	 quantidade integer not null,
+	 fk_id_cliente integer foreign key references cliente(id_cliente),
+	 fk_id_produto integer foreign key references produto(id_produto)
+)
+
+drop table venda;
+
+
+insert into cliente(nome_cliente) values ('Joao');
+insert into cliente(nome_cliente) values ('Carlos');
+
+insert into produto(nome_produto, estoque) values ('Tenis', 60);
+insert into produto(nome_produto, estoque) values ('Relogio', 28);
+
+
+
+
+create trigger insercaotrigger
+on venda
+after insert 
+as
+begin
+	declare 
+	@valor_venda integer,
+	@id_mod integer,
+	@print_estoque integer
+
+	select @valor_venda = quantidade, @id_mod = fk_id_produto from inserted 
+
+	update produtos 
+	set estoque = (estoque - @valor_venda) 
+	where id_produto = @id_mod 
+	
+	select @print_estoque = estoque from produtos where id_produto = @id_mod 
+
+	print 'Estoque do produto após operação: ' + cast(@print_estoque as nvarchar(100)) 
+
+end
+
+insert into venda(fk_id_cliente, fk_id_produto, quantidade) 
+values (1, 1, 5);
+insert into venda(fk_id_cliente, fk_id_produto, quantidade) 
+values (2, 2, 44);
+
+
+============================================================
+3) 
+
+create database ex3;
+
+create table clientes
+(
+	id_cliente integer not null primary key identity,
+	nome_cliente varchar(50) not null,
+	sexo_cliente varchar(9) not null
+)
+go
+
+
+
+create trigger adicionar_prefixo
+on clientes
+instead of insert
+as
+begin
+	declare
+	@sexo varchar(9),
+	@nome varchar(50)
+
+	select @sexo = sexo_cliente, @nome = nome_cliente from inserted 
+
+	if (@sexo = 'Masculino')
+	begin
+		select @nome = 'Sr. ' + @nome
+		insert into clientes(nome_cliente, sexo_cliente) 
+		values (@nome, @sexo);
+	end
+
+	else if (@sexo = 'Feminino')
+	begin
+		select @nome = 'Sra  ' + @nome
+		insert into clientes(nome_cliente, sexo_cliente) 
+		values (@nome, @sexo);
+	end
+
+	else
+	begin
+		raiserror('Erro.', 10, 11)
+	end
+
+end
+go
+
+
+
+insert into clientes (nome_cliente, sexo_cliente) 
+values ('Joao', 'Masculino');
+
+
+insert into clientes (nome_cliente, sexo_cliente) 
+values ('Antonio', 'Masculino');
+
+
+insert into clientes(nome_cliente, sexo_cliente) 
+values ('Maria', 'Feminino');
+
+
+insert into clientes (nome_cliente, sexo_cliente) 
+values ('Clara', 'Feminino');
