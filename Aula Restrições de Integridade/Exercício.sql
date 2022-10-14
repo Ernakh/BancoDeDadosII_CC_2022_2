@@ -14,11 +14,12 @@ Para professor:
 - para a titulação mestre, a categoria só pode ser assistente
 - para a titulação especialista, a categoria só pode ser auxiliar
 - um campo NumeroTurmas deve existir, e toda vez que uma turma for excluída ou inserida, esse valor deve ser decrementado ou incrementado
-
+- todo dia 31 do mês de dezembro incrementar 1 à idade do professor
 
 Para disciplinas
 - o nome é um atributo obrigatório
 - o número de créditos deve estar entre 2 e 12
+- o semestre da disciplina deve ser compativel com o numero de semestres do curso que esta vinculada
 
 Para curso
 - o nome é um atributo obrigatório;
