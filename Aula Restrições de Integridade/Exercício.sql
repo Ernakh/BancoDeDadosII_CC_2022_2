@@ -13,6 +13,7 @@ Para professor:
 - para a titulação doutor ou superior, a categoria só pode ser adjunto ou titular
 - para a titulação mestre, a categoria só pode ser assistente
 - para a titulação especialista, a categoria só pode ser auxiliar
+- um campo NumeroTurmas deve existir, e toda vez que uma turma for excluída ou inserida, esse valor deve ser decrementado ou incrementado
 
 
 Para disciplinas
