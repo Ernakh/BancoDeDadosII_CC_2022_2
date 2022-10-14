@@ -12,5 +12,18 @@ Para professor:
 - o categoria deve ser: 'auxiliar', 'assistente', 'adjunto' ou 'titular'
 
 
+Para disciplinas
+- o nome é um atributo obrigatório
+- o número de créditos deve estar entre 2 e 12
 
+Para curso
+- o nome é um atributo obrigatório;
+- o duração deve estar entre 6 e 12 semestres
+- o coordenador é uma chave estrangeira para Professores
+
+Para turma
+- vagas deve ser maior que zero;
+
+Para currículos
+- O semestre deve estar entre 1 e 12
 
