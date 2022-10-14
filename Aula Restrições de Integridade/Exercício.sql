@@ -10,6 +10,9 @@ Para professor:
 - o idade deve estar entre 21 e 70 anos
 - o titulação deve ser: 'especialista', 'mestre', 'doutor' pu 'pós-doutor'
 - o categoria deve ser: 'auxiliar', 'assistente', 'adjunto' ou 'titular'
+- para a titulação doutor ou superior, a categoria só pode ser adjunto ou titular
+- para a titulação mestre, a categoria só pode ser assistente
+- para a titulação especialista, a categoria só pode ser auxiliar
 
 
 Para disciplinas
