@@ -1,0 +1,11 @@
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\bin\Debug\AulaTransaction.exe.config
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\bin\Debug\AulaTransaction.exe
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\bin\Debug\AulaTransaction.pdb
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.csproj.AssemblyReference.cache
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.csproj.SuggestedBindingRedirects.cache
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.Properties.Resources.resources
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.csproj.GenerateResource.cache
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.csproj.CoreCompileInputs.cache
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.exe
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.pdb
+C:\Users\laboratorio\Downloads\BancoDeDadosII_CC_2022_2-main\AulaTransaction\AulaTransaction\obj\Debug\AulaTransaction.Form1.resources
